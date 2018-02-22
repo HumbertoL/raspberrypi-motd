@@ -97,16 +97,16 @@ greetings="$borderBar$(color $greetingsColor "$(center "Welcome back, $me!")")$b
 greetings="$greetings$borderBar$(color $greetingsColor "$(center "$(date +"%A, %d %B %Y, %T")")")$borderBar"
 
 # System information
-read loginFrom loginIP loginDate <<< $(last $me --time-format iso -2 | awk 'NR==2 { print $2,$3,$4 }')
+read loginFrom loginIP loginMonth loginDay loginTime loginYear <<< $(last $me -2 -F | awk 'NR==2 { print $2,$3,$5,$6,$7,$8 }')
 
 # TTY login
-if [[ $loginDate == - ]]; then
-  loginDate=$loginIP
-  loginIP=$loginFrom
+if [[ $loginDay == - ]]; then
+   loginDate=$loginIP
+   loginIP=$loginFrom
 fi
-
-if [[ $loginDate == *T* ]]; then
-  login="$(date -d $loginDate +"%A, %d %B %Y, %T") ($loginIP)"
+ 	 
+if [[ $loginDay =~ ^[0-9]+ ]]; then
+  login=$( date -d "${loginDay}-${loginMonth}-${loginYear} ${loginTime}" +'%FT%T' ) # format date to ISO
 else
   # Not enough logins
   login="None"
